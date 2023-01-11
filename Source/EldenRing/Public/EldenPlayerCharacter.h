@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "InputActionValue.h"
 #include "EldenPlayerCharacter.generated.h"
 
 UCLASS()
@@ -64,6 +65,7 @@ private:
 
 	float x;
 	float y;
-
+	float h;
+	float v;
 
 };

@@ -22,6 +22,17 @@ void AEldenPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	APlayerController* playerCon = Cast<APlayerController>(GetController());
+
+	if (playerCon != nullptr) {
+		UEnhancedInputLocalPlayerSubsystem* subsys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerCon->GetLocalPlayer());
+
+
+		if (subsys != nullptr) {
+			subsys->AddMappingContext(imc_myMapping, 0);
+		}
+	}
+
 }
 
 // Called every frame
@@ -33,6 +44,7 @@ void AEldenPlayerCharacter::Tick(float DeltaTime)
 	direction = FTransform(GetControlRotation()).TransformVector(direction); 
 	AddMovementInput(direction);
 	direction = FVector::ZeroVector;
+	//UE_LOG(LogTemp, Warning, TEXT("ad"));
 }
 
 // Called to bind functionality to input
@@ -42,7 +54,7 @@ void AEldenPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 	UEnhancedInputComponent* enhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 
-	enhancedInputComponent->BindAction(ia_Horizontal, ETriggerEvent::Triggered, this, &AEldenPlayerCharacter::Horizontal);
+	enhancedInputComponent->BindAction(ia_Horizontal, ETriggerEvent::Started, this, &AEldenPlayerCharacter::Horizontal);
 
 	enhancedInputComponent->BindAction(ia_Horizontal, ETriggerEvent::Completed, this, &AEldenPlayerCharacter::Horizontal);
 
@@ -62,23 +74,33 @@ void AEldenPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 void AEldenPlayerCharacter::MoveForward(const FInputActionValue& val)
 {
+	UE_LOG(LogTemp, Warning, TEXT("ws"));
 	x = val.Get<float>();
 	direction.X = x;
+	UE_LOG(LogTemp, Warning, TEXT("ws"));
 }
 
 void AEldenPlayerCharacter::MoveRight(const FInputActionValue& val)
 {
+	UE_LOG(LogTemp, Warning, TEXT("ad"));
 	y = val.Get<float>();
 	direction.Y = y;
+	UE_LOG(LogTemp, Warning, TEXT("ad"));
 }
 
 void AEldenPlayerCharacter::Horizontal(const FInputActionValue& val)
 {
-	
+	UE_LOG(LogTemp, Warning, TEXT("h"));
+	h = val.Get<float>();
+	AddControllerYawInput(h);
+	UE_LOG(LogTemp, Warning, TEXT("h"));
 }
 
 void AEldenPlayerCharacter::Vertical(const FInputActionValue& val)
 {
-
+	UE_LOG(LogTemp, Warning, TEXT("v"));
+	v = val.Get<float>();
+	AddControllerPitchInput(v);
+	UE_LOG(LogTemp, Warning, TEXT("v"));
 }
 
