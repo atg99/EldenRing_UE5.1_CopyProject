@@ -21,7 +21,7 @@ AEldenPlayerCharacter::AEldenPlayerCharacter()
 void AEldenPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
