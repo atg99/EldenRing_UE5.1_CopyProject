@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
+#include <GameFramework/CharacterMovementComponent.h>
 
 // Sets default values
 AEldenPlayerCharacter::AEldenPlayerCharacter()
@@ -15,6 +16,7 @@ AEldenPlayerCharacter::AEldenPlayerCharacter()
 
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
 
+	GetCharacterMovement();
 }
 
 // Called when the game starts or when spawned
@@ -42,6 +44,10 @@ void AEldenPlayerCharacter::Tick(float DeltaTime)
 
 	//디렉션을 컨트롤러 방향으로 변환
 	direction = FTransform(GetControlRotation()).TransformVector(direction); 
+
+	direction.Z = 0;
+	direction.Normalize();
+
 	AddMovementInput(direction);
 	direction = FVector::ZeroVector;
 	//UE_LOG(LogTemp, Warning, TEXT("ad"));
@@ -54,53 +60,113 @@ void AEldenPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 	UEnhancedInputComponent* enhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 
-	enhancedInputComponent->BindAction(ia_Horizontal, ETriggerEvent::Started, this, &AEldenPlayerCharacter::Horizontal);
-
+	enhancedInputComponent->BindAction(ia_Horizontal, ETriggerEvent::Triggered, this, &AEldenPlayerCharacter::Horizontal);
 	enhancedInputComponent->BindAction(ia_Horizontal, ETriggerEvent::Completed, this, &AEldenPlayerCharacter::Horizontal);
 
 	enhancedInputComponent->BindAction(ia_Vertical, ETriggerEvent::Triggered, this, &AEldenPlayerCharacter::Vertical);
-
 	enhancedInputComponent->BindAction(ia_Vertical, ETriggerEvent::Completed, this, &AEldenPlayerCharacter::Vertical);
 
 	enhancedInputComponent->BindAction(ia_MoveForward, ETriggerEvent::Triggered, this, &AEldenPlayerCharacter::MoveForward);
-
 	enhancedInputComponent->BindAction(ia_MoveForward, ETriggerEvent::Completed, this, &AEldenPlayerCharacter::MoveForward);
 
 	enhancedInputComponent->BindAction(ia_MoveRight, ETriggerEvent::Triggered, this, &AEldenPlayerCharacter::MoveRight);
-
 	enhancedInputComponent->BindAction(ia_MoveRight, ETriggerEvent::Completed, this, &AEldenPlayerCharacter::MoveRight);
+
+	enhancedInputComponent->BindAction(ia_Spacebar, ETriggerEvent::Started, this, &AEldenPlayerCharacter::Rolling);
+	//S 버튼이 눌렸는지 검사하는 함수
+	enhancedInputComponent->BindAction(ia_S, ETriggerEvent::Started, this, &AEldenPlayerCharacter::SPressed);
+	enhancedInputComponent->BindAction(ia_SReleased, ETriggerEvent::Completed, this, &AEldenPlayerCharacter::SRelease);
+
+	//F jump
+	enhancedInputComponent->BindAction(ia_FPressed, ETriggerEvent::Started, this, &AEldenPlayerCharacter::Jumping);
+
+	//M map open
+	enhancedInputComponent->BindAction(ia_MPressed, ETriggerEvent::Started, this, &AEldenPlayerCharacter::OpenMap);
+	//enhancedInputComponent->BindAction(ia_MReleased, ETriggerEvent::Completed, this, &AEldenPlayerCharacter::CloseMap);
+
+
+
 
 }
 
 void AEldenPlayerCharacter::MoveForward(const FInputActionValue& val)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ws"));
 	x = val.Get<float>();
 	direction.X = x;
-	UE_LOG(LogTemp, Warning, TEXT("ws"));
 }
 
 void AEldenPlayerCharacter::MoveRight(const FInputActionValue& val)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ad"));
 	y = val.Get<float>();
 	direction.Y = y;
-	UE_LOG(LogTemp, Warning, TEXT("ad"));
 }
 
 void AEldenPlayerCharacter::Horizontal(const FInputActionValue& val)
 {
-	UE_LOG(LogTemp, Warning, TEXT("h"));
+	
 	h = val.Get<float>();
 	AddControllerYawInput(h);
-	UE_LOG(LogTemp, Warning, TEXT("h"));
+
 }
 
 void AEldenPlayerCharacter::Vertical(const FInputActionValue& val)
 {
-	UE_LOG(LogTemp, Warning, TEXT("v"));
+
 	v = val.Get<float>();
 	AddControllerPitchInput(v);
-	UE_LOG(LogTemp, Warning, TEXT("v"));
+
+}
+
+void AEldenPlayerCharacter::Rolling()
+{
+	if (isSPressed == false) {
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Rolling")));
+	}
+	else if(isSPressed == true) {
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("BackStep")));
+	}
+}
+
+void AEldenPlayerCharacter::SPressed()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("true")));
+	isSPressed = true;
+}
+
+void AEldenPlayerCharacter::SRelease()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("false")));
+	isSPressed = false;
+}
+
+void AEldenPlayerCharacter::Jumping()
+{
+	Jump();
+}
+
+void AEldenPlayerCharacter::OpenMap()
+{
+	if (isMapOpen == false) {
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("MapOpen")));
+		isMapOpen = true;
+	}
+	else if (isMapOpen == true) {
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("MapClosed")));
+		isMapOpen = false;
+	}
+
+
+}
+
+void AEldenPlayerCharacter::CloseMap()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("CloseMap")));
 }
 

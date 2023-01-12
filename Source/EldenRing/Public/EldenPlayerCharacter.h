@@ -42,7 +42,28 @@ public:
 	class UInputAction* ia_MoveRight;
 
 	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
+		class UInputAction* ia_Spacebar;
+
+	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
+	class UInputAction* ia_S;
+
+	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
+	class UInputAction* ia_SReleased;
+
+	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
+	class UInputAction* ia_FPressed;
+
+	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
+	class UInputAction* ia_MPressed;
+
+	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
+	class UInputAction* ia_MReleased;
+
+	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
 	class UInputMappingContext* imc_myMapping;
+
+	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
+	float rollingDestance = 1500;
 
 private:
 
@@ -58,7 +79,23 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void Vertical(const FInputActionValue& val);
 
+	UFUNCTION(BlueprintCallable)
+	void Rolling();
+
+	UFUNCTION(BlueprintCallable)
+	void SPressed();
 	
+	UFUNCTION(BlueprintCallable)
+	void SRelease();
+
+	UFUNCTION(BlueprintCallable)
+	void Jumping();
+
+	UFUNCTION(BlueprintCallable)
+	void OpenMap();
+
+	UFUNCTION(BlueprintCallable)
+	void CloseMap();
 
 	UPROPERTY()
 	FVector direction;
@@ -68,4 +105,6 @@ private:
 	float h;
 	float v;
 
+	bool isSPressed=false;
+	bool isMapOpen = false;
 };
